@@ -16,15 +16,9 @@ app.get('/', authenticate, params, (req, res) => {
     const url = req.params.url;
 
     // Fetch the image from the URL
-    const originReq = request.get({ url, encoding: null }, (err, origin, buffer) => {
+    request.get({ url, encoding: null }, (err, origin, buffer) => {
         if (err || origin.statusCode >= 400) {
             // Use the redirect function if there is an error
-            return redirect(req, res);
-        }
-
-        if (origin.statusCode >= 300 && origin.headers.location) {
-            // Handle redirects
-            req.params.url = origin.headers.location;
             return redirect(req, res);
         }
 
@@ -37,11 +31,6 @@ app.get('/', authenticate, params, (req, res) => {
             // Bypass compression and directly send the original image
             bypass(req, res, buffer);
         }
-    });
-
-    // Listen for errors on the response body and destroy the socket if an error occurs
-    originReq.on('response', origin => {
-        origin.body.on('error', _ => req.socket.destroy());
     });
 });
 
