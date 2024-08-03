@@ -9,6 +9,10 @@ function redirect(req, res) {
   res.removeHeader('date');
   res.removeHeader('etag');
   res.setHeader('location', encodeURI(req.params.url));
+  res.setHeader('content-encoding', 'identity');
+            res.setHeader('Access-Control-Allow-Origin', '*');
+            res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
+            res.setHeader('Cross-Origin-Embedder-Policy', 'unsafe-none');
   res.status(302).end();
 }
 
