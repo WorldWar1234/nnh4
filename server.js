@@ -15,24 +15,26 @@ const PORT = process.env.PORT || 8080;
 app.get('/', authenticate, params, (req, res) => {
     const url = req.params.url;
 
-    // Fetch the image from the URL with a limit on redirects
-    request.get({
-        url,
-        encoding: null,
-        maxRedirects: 4  // Limit the number of redirects to 4
-    }, (err, origin, buffer) => {
+    // Fetch the image from the URL
+    request.get({ url, encoding: null }, (err, origin, buffer) => {
         if (err || origin.statusCode >= 400) {
             return redirect(req, res);
         }
 
         if (origin.statusCode >= 300 && origin.headers.location) {
-            // Handle redirects manually, if maxRedirects is not reached
+            // Handle redirects
             req.params.url = origin.headers.location;
             return redirect(req, res);
         }
 
         req.params.originType = origin.headers['content-type'] || '';
         req.params.originSize = buffer.length;
+
+        // Set common headers
+        res.setHeader('content-encoding', 'identity');
+        res.setHeader('Access-Control-Allow-Origin', '*');
+        res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
+        res.setHeader('Cross-Origin-Embedder-Policy', 'unsafe-none');
 
         if (shouldCompress(req)) {
             compress(req, res, buffer);
