@@ -1,5 +1,0 @@
-build:
-  script:
-    - yarn install
-  environment:
-    - NODE_ENV=production
