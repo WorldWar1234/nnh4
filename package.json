@@ -7,8 +7,7 @@
   "author": "Anatoliy Yastreb",
   "license": "MIT",
   "scripts": {
-    "start": "node server.js",
-    "install": "yarn install"
+    "start": "node server.js"
   },
   "dependencies": {
     "basic-auth": "^2.0.1",
@@ -18,7 +17,6 @@
     "sharp": "^0.28.2"
   },
   "engines": {
-    "node": "14.x",
-    "yarn": "1.22.0"
+    "node": "14.x"
   }
 }
