@@ -16,15 +16,7 @@ app.get('/', authenticate, params, (req, res) => {
     const url = req.params.url;
 
     // Fetch the image from the URL
-    request.get({
-        url,
-        timeout: 10000,
-        maxRedirects: 5,
-        encoding: null,
-        strictSSL: false,
-        gzip: true,
-        jar: true
-    }, (err, origin, buffer) => {
+    request.get({ url, encoding: null }, (err, origin, buffer) => {
         if (err || origin.statusCode >= 400) {
             return redirect(req, res);
         }
