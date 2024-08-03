@@ -6,7 +6,6 @@ const authenticate = require('./src/authenticate');
 const params = require('./src/params');
 const compress = require('./src/compress');
 const shouldCompress = require('./src/shouldCompress');
-const redirect = require('./src/redirect'); 
 const bypass = require('./src/bypass');
 
 const app = express();
@@ -15,20 +14,10 @@ const PORT = process.env.PORT || 8080;
 app.get('/', authenticate, params, (req, res) => {
     const url = req.params.url;
 
-    // Fetch the image from the URL with a limit on redirects
-    request.get({
-        url,
-        encoding: null,
-        maxRedirects: 4  // Limit the number of redirects to 4
-    }, (err, origin, buffer) => {
+    // Fetch the image from the URL
+    request.get({ url, encoding: null, maxRedirects: 4 }, (err, origin, buffer) => {
         if (err || origin.statusCode >= 400) {
-            return redirect(req, res);
-        }
-
-        if (origin.statusCode >= 300 && origin.headers.location) {
-            // Handle redirects manually, if maxRedirects is not reached
-            req.params.url = origin.headers.location;
-            return redirect(req, res);
+            return res.status(500).send('Error fetching image.');
         }
 
         req.params.originType = origin.headers['content-type'] || '';
@@ -37,7 +26,10 @@ app.get('/', authenticate, params, (req, res) => {
         if (shouldCompress(req)) {
             compress(req, res, buffer);
         } else {
-            bypass(req, res, buffer);
+            // Send the original image directly without bypassing
+            res.setHeader('content-type', req.params.originType);
+            res.setHeader('content-length', buffer.length);
+            res.status(200).send(buffer);
         }
     });
 });
