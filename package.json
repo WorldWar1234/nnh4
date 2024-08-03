@@ -7,16 +7,17 @@
   "author": "Anatoliy Yastreb",
   "license": "MIT",
   "scripts": {
+    "prestart": "yarn install",
     "start": "node server.js"
   },
   "dependencies": {
     "basic-auth": "^2.0.1",
-    "express": "4.19.2",
-    "lodash": "^4.17.21",
+    "express": "4.17.1",
     "request": "^2.83.0",
     "sharp": "^0.28.2"
   },
   "engines": {
-    "node": "14.x"
+    "node": "14.x",
+    "yarn": "1.22.2"
   }
 }
