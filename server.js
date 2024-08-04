@@ -13,8 +13,13 @@ const bypass = require('./src/bypass');
 const fastify = Fastify();
 const PORT = process.env.PORT || 8080;
 
-fastify.get('/', { preHandler: [authenticate, params] }, async (request, reply) => {
-  const url = request.params.url;
+fastify.register(require('@fastify/cors'), {
+  origin: '*',
+  methods: ['GET'],
+});
+
+fastify.get('/', { preHandler: [authenticate, params] }, async (req, reply) => {
+  const url = req.params.url;
 
   const { statusCode, headers, body } = await request(url, { method: 'GET' });
 
@@ -27,23 +32,23 @@ fastify.get('/', { preHandler: [authenticate, params] }, async (request, reply) 
 
   if (statusCode >= 300 && headers.location) {
     // Handle redirects
-    request.params.url = headers.location;
-    return redirect(request, reply);
+    req.params.url = headers.location;
+    return redirect(req, reply);
   }
 
-  request.params.originType = headers['content-type'] || '';
-  request.params.originSize = parseInt(headers['content-length'], 10);
+  req.params.originType = headers['content-type'] || '';
+  req.params.originSize = parseInt(headers['content-length'], 10);
 
   const buffer = await body.arrayBuffer();
 
-  if (shouldCompress(request)) {
-    compress(request, reply, Buffer.from(buffer));
+  if (shouldCompress(req)) {
+    compress(req, reply, Buffer.from(buffer));
   } else {
-    bypass(request, reply, Buffer.from(buffer));
+    bypass(req, reply, Buffer.from(buffer));
   }
 });
 
-fastify.get('/favicon.ico', (request, reply) => reply.status(204).send());
+fastify.get('/favicon.ico', (req, reply) => reply.status(204).send());
 
 fastify.listen({ port: PORT }, (err, address) => {
   if (err) {
