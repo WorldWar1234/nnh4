@@ -38,11 +38,12 @@ fastify.get('/', { preHandler: [authenticate, params] }, async (req, reply) => {
     req.params.originType = headers['content-type'] || '';
     req.params.originSize = parseInt(headers['content-length'], 10);
 
-    // Set common headers
-    // reply.header('content-encoding', 'identity');
-    // reply.header('Access-Control-Allow-Origin', '*');
-    // reply.header('Cross-Origin-Resource-Policy', 'cross-origin');
-    // reply.header('Cross-Origin-Embedder-Policy', 'unsafe-none');
+    /* Set common headers
+    reply.header('content-encoding', 'identity');
+    reply.header('Access-Control-Allow-Origin', '*');
+    reply.header('Cross-Origin-Resource-Policy', 'cross-origin');
+    reply.header('Cross-Origin-Embedder-Policy', 'unsafe-none');
+    */
 
     const buffer = await body.arrayBuffer();
 
@@ -55,7 +56,7 @@ fastify.get('/', { preHandler: [authenticate, params] }, async (req, reply) => {
 
 fastify.get('/favicon.ico', (req, reply) => reply.status(204).send());
 
-fastify.listen(PORT, (err, address) => {
+fastify.listen({ port: PORT, host: '0.0.0.0' }, (err, address) => {
     if (err) {
         console.error(err);
         process.exit(1);
