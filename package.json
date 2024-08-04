@@ -7,14 +7,14 @@
   "author": "Anatoliy Yastreb",
   "license": "MIT",
   "scripts": {
-    
     "start": "node server.js"
   },
   "dependencies": {
     "basic-auth": "^2.0.1",
-    "express": "^4.17.1",
+    "fastify": "^4.0.0",
     "undici": "^5.0.0",
-    "sharp": "^0.28.2"
+    "sharp": "^0.28.2",
+    "@fastify/cors": "^8.0.0"
   },
   "engines": {
     "node": "14.x"
