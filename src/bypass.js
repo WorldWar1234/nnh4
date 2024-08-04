@@ -1,4 +1,4 @@
-function bypass(request, reply, buffer) {
+function bypass(req, reply, buffer) {
   reply
     .header('content-encoding', 'identity')
     .header('content-length', buffer.length)
