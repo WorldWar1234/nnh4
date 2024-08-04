@@ -5,7 +5,7 @@ function params(req, reply, next) {
 
     // Check if URL parameter is missing
     if (!url) {
-        return res.send('bandwidth-hero-proxy');
+        return reply.end('bandwidth-hero-proxy');
     }
 
     // Process parameters if URL is present
