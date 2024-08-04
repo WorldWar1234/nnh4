@@ -11,9 +11,6 @@ function redirect(request, reply) {
         .removeHeader('etag')
         .header('location', encodeURI(request.params.url))
         .header('content-encoding', 'identity')
-        .header('Access-Control-Allow-Origin', '*')
-        .header('Cross-Origin-Resource-Policy', 'cross-origin')
-        .header('Cross-Origin-Embedder-Policy', 'unsafe-none')
         .status(302)
         .send();
 }
