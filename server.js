@@ -13,13 +13,13 @@ const bypass = require('./src/bypass');
 const fastify = Fastify();
 const PORT = process.env.PORT || 8080;
 
-fastify.register(require('@fastify/cors'), {
+fastify.register(require('fastify-cors'), {
   origin: '*',
   methods: ['GET'],
 });
 
 fastify.get('/', { preHandler: [authenticate, params] }, async (request, reply) => {
-    const url = request.query.url;
+    const url = request.params.url;
 
     const { statusCode, headers, body } = await request(url, { method: 'GET' });
 
@@ -31,12 +31,12 @@ fastify.get('/', { preHandler: [authenticate, params] }, async (request, reply) 
 
     if (statusCode >= 300 && headers.location) {
         // Handle redirects
-        request.query.url = headers.location;
+        request.params.url = headers.location;
         return redirect(request, reply);
     }
 
-    request.query.originType = headers['content-type'] || '';
-    request.query.originSize = parseInt(headers['content-length'], 10);
+    request.params.originType = headers['content-type'] || '';
+    request.params.originSize = parseInt(headers['content-length'], 10);
 
     /* Set common headers
     reply.header('content-encoding', 'identity');
