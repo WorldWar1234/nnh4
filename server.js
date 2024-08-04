@@ -18,7 +18,8 @@ app.get('/', authenticate, params, (req, res) => {
     // Fetch the image from the URL
     request.get({ url, encoding: null }, (err, origin, buffer) => {
         if (err || origin.statusCode >= 400) {
-            return redirect(req, res);
+            // Send an error response if there is an error or a bad status code
+            return res.status(500).send('Error fetching the image.');
         }
 
         if (origin.statusCode >= 300 && origin.headers.location) {
