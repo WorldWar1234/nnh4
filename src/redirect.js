@@ -1,19 +1,19 @@
-function redirect(req, res) {
-  if (res.headersSent) {
+function redirect(req, reply) {
+  if (reply.headersSent) {
     return;
   }
 
-  res.setHeader('content-length', 0);
-  res.removeHeader('cache-control');
-  res.removeHeader('expires');
-  res.removeHeader('date');
-  res.removeHeader('etag');
-  res.setHeader('location', encodeURI(req.params.url));
-  res.setHeader('content-encoding', 'identity');
-            res.setHeader('Access-Control-Allow-Origin', '*');
-            res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
-            res.setHeader('Cross-Origin-Embedder-Policy', 'unsafe-none');
-  res.status(302).end();
+  reply.header('content-length', 0);
+  reply.removeHeader('cache-control');
+  reply.removeHeader('expires');
+  reply.removeHeader('date');
+  reply.removeHeader('etag');
+  reply.header('location', encodeURI(req.params.url));
+  reply.header('content-encoding', 'identity');
+  reply.header('Access-Control-Allow-Origin', '*');
+  reply.header('Cross-Origin-Resource-Policy', 'cross-origin');
+  reply.header('Cross-Origin-Embedder-Policy', 'unsafe-none');
+  reply.status(302).end();
 }
 
 module.exports = redirect;
