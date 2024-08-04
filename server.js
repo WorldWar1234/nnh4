@@ -13,7 +13,7 @@ const bypass = require('./src/bypass');
 const fastify = Fastify();
 const PORT = process.env.PORT || 8080;
 
-fastify.register(require('fastify-cors'), {
+fastify.register(require('@fastify/cors'), {
   origin: '*',
   methods: ['GET'],
 });
