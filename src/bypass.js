@@ -1,5 +1,5 @@
-function bypass(request, reply, buffer) {
-    reply
+function bypass(req, res, buffer) {
+    res
         .header('content-encoding', 'identity')
         .header('content-length', buffer.length)
         .status(200)
