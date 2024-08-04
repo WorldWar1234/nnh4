@@ -11,10 +11,10 @@
   },
   "dependencies": {
     "basic-auth": "^2.0.1",
-    "fastify": "^4.28.0",
+    "fastify": "^3.29.0",
+    "@fastify/cors": "^5.1.0", // Correct version for Fastify v3.x
     "undici": "^5.0.0",
-    "sharp": "^0.28.2",
-    "@fastify/cors": "^8.0.0"
+    "sharp": "^0.28.2"
   },
   "engines": {
     "node": "14.x"
