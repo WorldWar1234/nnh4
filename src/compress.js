@@ -1,6 +1,7 @@
 const sharp = require('sharp');
+const redirect = require('./redirect');
 
-function compress(req, res, input) {
+function compress(req, reply, input) {
     const format = req.params.webp ? 'webp' : 'jpeg';
 
     sharp(input)
@@ -11,19 +12,19 @@ function compress(req, res, input) {
             optimizeScans: true
         })
         .toBuffer((err, output, info) => {
-            if (err || !info || res.headersSent) {
-                return redirect(req, res);
+            if (err || !info || reply.headersSent) {
+                return redirect(req, reply);
             }
 
-            res.setHeader('content-type', `image/${format}`);
-            res.setHeader('content-length', info.size);
-            res.setHeader('x-original-size', req.params.originSize);
-            res.setHeader('x-bytes-saved', req.params.originSize - info.size);
-            res.setHeader('content-encoding', 'identity');
-        res.setHeader('Access-Control-Allow-Origin', '*');
-        res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
-        res.setHeader('Cross-Origin-Embedder-Policy', 'unsafe-none');
-            res.status(200).send(output);
+            reply.header('content-type', `image/${format}`);
+            reply.header('content-length', info.size);
+            reply.header('x-original-size', req.params.originSize);
+            reply.header('x-bytes-saved', req.params.originSize - info.size);
+            reply.header('content-encoding', 'identity');
+            reply.header('Access-Control-Allow-Origin', '*');
+            reply.header('Cross-Origin-Resource-Policy', 'cross-origin');
+            reply.header('Cross-Origin-Embedder-Policy', 'unsafe-none');
+            reply.status(200).send(output);
         });
 }
 
