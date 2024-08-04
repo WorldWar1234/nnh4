@@ -1,18 +1,15 @@
 const DEFAULT_QUALITY = 40;
 
-function params(req, reply, done) {
-    let url = req.query.url;
-    if (!url) {
-        reply.send('bandwidth-hero-proxy');
-        return;
-    }
+function params(request, reply, next) {
+    const url = request.query.url;
+    if (!url) return reply.send('bandwidth-hero-proxy');
 
-    req.params.url = decodeURIComponent(url);
-    req.params.webp = !req.query.jpeg;
-    req.params.grayscale = req.query.bw != 0;
-    req.params.quality = parseInt(req.query.l, 10) || DEFAULT_QUALITY;
+    request.query.url = decodeURIComponent(url);
+    request.query.webp = !request.query.jpeg;
+    request.query.bw = request.query.bw || '0';
+    request.query.quality = parseInt(request.query.l, 10) || DEFAULT_QUALITY;
 
-    done();
+    next();
 }
 
 module.exports = params;
