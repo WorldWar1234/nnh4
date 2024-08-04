@@ -2,7 +2,7 @@
 'use strict';
 
 const Fastify = require('fastify');
-const { request: undiciRequest } = require('undici');
+const { request } = require('undici');
 const authenticate = require('./src/authenticate');
 const params = require('./src/params');
 const compress = require('./src/compress');
@@ -16,11 +16,12 @@ const PORT = process.env.PORT || 8080;
 fastify.get('/', { preHandler: [authenticate, params] }, async (request, reply) => {
   const url = request.params.url;
 
-  const { statusCode, headers, body } = await undiciRequest(url, { method: 'GET' });
+  const { statusCode, headers, body } = await request(url, { method: 'GET' });
 
   if (statusCode >= 400) {
     // Send an error response if there is a bad status code
-    reply.status(500).send('Error fetching the image.');
+    reply.statusCode = 500;
+    reply.send('Error fetching the image.');
     return;
   }
 
