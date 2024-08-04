@@ -2,12 +2,12 @@ const sharp = require('sharp');
 const redirect = require('./redirect');
 
 function compress(request, reply, input) {
-    const format = request.query.webp ? 'webp' : 'jpeg';
+    const format = request.params.webp ? 'webp' : 'jpeg';
 
     sharp(input)
-        .grayscale(request.query.bw !== '0')
+        .grayscale(request.params.grayscale)
         .toFormat(format, {
-            quality: parseInt(request.query.l, 10) || 40,
+            quality: request.params.quality,
             progressive: true,
             optimizeScans: true
         })
@@ -16,15 +16,17 @@ function compress(request, reply, input) {
                 return redirect(request, reply);
             }
 
-            reply.header('content-type', `image/${format}`);
-            reply.header('content-length', info.size);
-            reply.header('x-original-size', request.query.originSize);
-            reply.header('x-bytes-saved', request.query.originSize - info.size);
-            reply.header('content-encoding', 'identity');
-            reply.header('Access-Control-Allow-Origin', '*');
-            reply.header('Cross-Origin-Resource-Policy', 'cross-origin');
-            reply.header('Cross-Origin-Embedder-Policy', 'unsafe-none');
-            reply.status(200).send(output);
+            reply
+                .header('content-type', `image/${format}`)
+                .header('content-length', info.size)
+                .header('x-original-size', request.params.originSize)
+                .header('x-bytes-saved', request.params.originSize - info.size)
+                .header('content-encoding', 'identity')
+                .header('Access-Control-Allow-Origin', '*')
+                .header('Cross-Origin-Resource-Policy', 'cross-origin')
+                .header('Cross-Origin-Embedder-Policy', 'unsafe-none')
+                .status(200)
+                .send(output);
         });
 }
 
