@@ -13,11 +13,6 @@ const bypass = require('./src/bypass');
 const fastify = Fastify();
 const PORT = process.env.PORT || 8080;
 
-fastify.register(require('@fastify/cors'), {
-  origin: '*',
-  methods: ['GET'],
-});
-
 fastify.get('/', { preHandler: [authenticate, params] }, async (request, reply) => {
     const url = request.params.url;
 
@@ -37,13 +32,6 @@ fastify.get('/', { preHandler: [authenticate, params] }, async (request, reply) 
 
     request.params.originType = headers['content-type'] || '';
     request.params.originSize = parseInt(headers['content-length'], 10);
-
-    /* Set common headers
-    reply.header('content-encoding', 'identity');
-    reply.header('Access-Control-Allow-Origin', '*');
-    reply.header('Cross-Origin-Resource-Policy', 'cross-origin');
-    reply.header('Cross-Origin-Embedder-Policy', 'unsafe-none');
-    */
 
     const buffer = await body.arrayBuffer();
 
