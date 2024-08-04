@@ -1,6 +1,6 @@
 const DEFAULT_QUALITY = 40;
 
-function params(req, res, next) {
+function params(req, reply, next) {
     const { url, jpeg, bw, l } = req.query;
 
     // Check if URL parameter is missing
