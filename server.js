@@ -39,9 +39,9 @@ fastify.get('/', { preHandler: [authenticate, params] }, async (req, reply) => {
   const buffer = await body.arrayBuffer();
 
   if (shouldCompress(req)) {
-    compress(req, reply, Buffer.from(buffer));
+    compress(req, reply, buffer);
   } else {
-    bypass(req, reply, Buffer.from(buffer));
+    redirect(req, reply);
   }
 });
 
