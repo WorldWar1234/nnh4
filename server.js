@@ -2,7 +2,7 @@
 'use strict';
 
 const Fastify = require('fastify');
-const { request } = require('undici');
+const { request: undiciRequest } = require('undici');
 const authenticate = require('./src/authenticate');
 const params = require('./src/params');
 const compress = require('./src/compress');
@@ -13,41 +13,41 @@ const bypass = require('./src/bypass');
 const fastify = Fastify();
 const PORT = process.env.PORT || 8080;
 
-fastify.get('/', { preHandler: [authenticate, params] }, async (req, res) => {
-    const url = req.params.url;
+fastify.get('/', { preHandler: [authenticate, params] }, async (request, reply) => {
+  const url = request.params.url;
 
-    const { statusCode, headers, body } = await request(url, { method: 'GET' });
+  const { statusCode, headers, body } = await undiciRequest(url, { method: 'GET' });
 
-    if (statusCode >= 400) {
-        // Send an error response if there is a bad status code
-        res.status(500).send('Error fetching the image.');
-        return;
-    }
+  if (statusCode >= 400) {
+    // Send an error response if there is a bad status code
+    reply.status(500).send('Error fetching the image.');
+    return;
+  }
 
-    if (statusCode >= 300 && headers.location) {
-        // Handle redirects
-        req.params.url = headers.location;
-        return redirect(req, res);
-    }
+  if (statusCode >= 300 && headers.location) {
+    // Handle redirects
+    request.params.url = headers.location;
+    return redirect(request, reply);
+  }
 
-    req.params.originType = headers['content-type'] || '';
-    req.params.originSize = parseInt(headers['content-length'], 10);
+  request.params.originType = headers['content-type'] || '';
+  request.params.originSize = parseInt(headers['content-length'], 10);
 
-    const buffer = await body.arrayBuffer();
+  const buffer = await body.arrayBuffer();
 
-    if (shouldCompress(req)) {
-        compress(req, res, Buffer.from(buffer));
-    } else {
-        bypass(req, res, Buffer.from(buffer));
-    }
+  if (shouldCompress(request)) {
+    compress(request, reply, Buffer.from(buffer));
+  } else {
+    bypass(request, reply, Buffer.from(buffer));
+  }
 });
 
-fastify.get('/favicon.ico', (req, res) => res.status(204).send());
+fastify.get('/favicon.ico', (request, reply) => reply.status(204).send());
 
 fastify.listen({ port: PORT }, (err, address) => {
-    if (err) {
-        console.error(err);
-        process.exit(1);
-    }
-    console.log(`Listening on ${address}`);
+  if (err) {
+    console.error(err);
+    process.exit(1);
+  }
+  console.log(`Listening on ${address}`);
 });
