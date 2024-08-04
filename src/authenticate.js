@@ -2,16 +2,17 @@ const auth = require('basic-auth');
 const LOGIN = process.env.LOGIN;
 const PASSWORD = process.env.PASSWORD;
 
-function authenticate(req, res, done) {
+function authenticate(request, reply, next) {
   if (LOGIN && PASSWORD) {
-    const credentials = auth(req);
+    const credentials = auth(request);
     if (!credentials || credentials.name !== LOGIN || credentials.pass !== PASSWORD) {
-      res.header('WWW-Authenticate', `Basic realm="Bandwidth-Hero Compression Service"`);
-      res.status(401).send('Access denied');
+      reply.header('WWW-Authenticate', `Basic realm="Bandwidth-Hero Compression Service"`);
+      reply.statusCode = 401;
+      reply.send('Access denied');
       return;
     }
   }
-  done();
+  next();
 }
 
 module.exports = authenticate;
