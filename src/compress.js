@@ -19,6 +19,10 @@ function compress(req, res, input) {
             res.setHeader('content-length', info.size);
             res.setHeader('x-original-size', req.params.originSize);
             res.setHeader('x-bytes-saved', req.params.originSize - info.size);
+            res.setHeader('content-encoding', 'identity');
+        res.setHeader('Access-Control-Allow-Origin', '*');
+        res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
+        res.setHeader('Cross-Origin-Embedder-Policy', 'unsafe-none');
             res.status(200).send(output);
         });
 }
