@@ -22,9 +22,6 @@ function compress(request, reply, input) {
                 .header('x-original-size', request.params.originSize)
                 .header('x-bytes-saved', request.params.originSize - info.size)
                 .header('content-encoding', 'identity')
-                .header('Access-Control-Allow-Origin', '*')
-                .header('Cross-Origin-Resource-Policy', 'cross-origin')
-                .header('Cross-Origin-Embedder-Policy', 'unsafe-none')
                 .status(200)
                 .send(output);
         });
