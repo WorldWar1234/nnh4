@@ -1,4 +1,4 @@
-function bypass(req, reply, buffer) {
+function bypass(request, reply, buffer) {
     reply.header('content-encoding', 'identity');
     reply.header('Access-Control-Allow-Origin', '*');
     reply.header('Cross-Origin-Resource-Policy', 'cross-origin');
