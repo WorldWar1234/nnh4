@@ -1,43 +1,64 @@
 #!/usr/bin/env node
 'use strict';
-const express = require('express');
+
+const Fastify = require('fastify');
 const { request } = require('undici');
 const authenticate = require('./src/authenticate');
 const params = require('./src/params');
 const compress = require('./src/compress');
 const shouldCompress = require('./src/shouldCompress');
-const redirect = require('./src/redirect'); 
+const redirect = require('./src/redirect');
 const bypass = require('./src/bypass');
 
-const app = express();
+const fastify = Fastify();
 const PORT = process.env.PORT || 8080;
 
-app.get('/', authenticate, params, async (req, res) => {
+fastify.register(require('@fastify/cors'), {
+  origin: '*',
+  methods: ['GET'],
+});
+
+fastify.get('/', { preHandler: [authenticate, params] }, async (req, reply) => {
     const url = req.params.url;
 
-    // Fetch the image from the URL
-    const { statusCode, headers, body } = await request(url);
-    const buffer = await body.arrayBuffer();
+    const { statusCode, headers, body } = await request(url, { method: 'GET' });
 
     if (statusCode >= 400) {
-        return res.status(500).send('Error fetching the image.');
+        // Send an error response if there is a bad status code
+        reply.status(500).send('Error fetching the image.');
+        return;
     }
 
     if (statusCode >= 300 && headers.location) {
+        // Handle redirects
         req.params.url = headers.location;
-        return redirect(req, res);
+        return redirect(req, reply);
     }
 
     req.params.originType = headers['content-type'] || '';
-    req.params.originSize = buffer.byteLength;
+    req.params.originSize = parseInt(headers['content-length'], 10);
+
+    // Set common headers
+    // reply.header('content-encoding', 'identity');
+    // reply.header('Access-Control-Allow-Origin', '*');
+    // reply.header('Cross-Origin-Resource-Policy', 'cross-origin');
+    // reply.header('Cross-Origin-Embedder-Policy', 'unsafe-none');
+
+    const buffer = await body.arrayBuffer();
 
     if (shouldCompress(req)) {
-        compress(req, res, Buffer.from(buffer));
+        compress(req, reply, Buffer.from(buffer));
     } else {
-        bypass(req, res, Buffer.from(buffer));
+        bypass(req, reply, Buffer.from(buffer));
     }
 });
 
-app.get('/favicon.ico', (req, res) => res.status(204).end());
+fastify.get('/favicon.ico', (req, reply) => reply.status(204).send());
 
-app.listen(PORT, () => console.log(`Listening on ${PORT}`));
+fastify.listen(PORT, (err, address) => {
+    if (err) {
+        console.error(err);
+        process.exit(1);
+    }
+    console.log(`Listening on ${address}`);
+});
