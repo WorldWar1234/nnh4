@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 'use strict';
 const express = require('express');
-const request = require('request');
+const { request } = require('undici');
 const authenticate = require('./src/authenticate');
 const params = require('./src/params');
 const compress = require('./src/compress');
@@ -12,37 +12,30 @@ const bypass = require('./src/bypass');
 const app = express();
 const PORT = process.env.PORT || 8080;
 
-app.get('/', authenticate, params, (req, res) => {
+app.get('/', authenticate, params, async (req, res) => {
     const url = req.params.url;
 
     // Fetch the image from the URL
-    request.get({ url, encoding: null }, (err, origin, buffer) => {
-        if (err || origin.statusCode >= 400) {
-            // Send an error response if there is an error or a bad status code
-            return res.status(500).send('Error fetching the image.');
-        }
+    const { statusCode, headers, body } = await request(url);
+    const buffer = await body.arrayBuffer();
 
-        if (origin.statusCode >= 300 && origin.headers.location) {
-            // Handle redirects
-            req.params.url = origin.headers.location;
-            return redirect(req, res);
-        }
+    if (statusCode >= 400) {
+        return res.status(500).send('Error fetching the image.');
+    }
 
-        req.params.originType = origin.headers['content-type'] || '';
-        req.params.originSize = buffer.length;
+    if (statusCode >= 300 && headers.location) {
+        req.params.url = headers.location;
+        return redirect(req, res);
+    }
 
-        /*/ Set common headers
-        res.setHeader('content-encoding', 'identity');
-        res.setHeader('Access-Control-Allow-Origin', '*');
-        res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
-        res.setHeader('Cross-Origin-Embedder-Policy', 'unsafe-none'); */
+    req.params.originType = headers['content-type'] || '';
+    req.params.originSize = buffer.byteLength;
 
-        if (shouldCompress(req)) {
-            compress(req, res, buffer);
-        } else {
-            bypass(req, res, buffer);
-        }
-    });
+    if (shouldCompress(req)) {
+        compress(req, res, Buffer.from(buffer));
+    } else {
+        bypass(req, res, Buffer.from(buffer));
+    }
 });
 
 app.get('/favicon.ico', (req, res) => res.status(204).end());
