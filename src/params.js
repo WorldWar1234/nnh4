@@ -1,6 +1,6 @@
 const DEFAULT_QUALITY = 40;
 
-function params(req, reply, next) {
+function params(req, reply, done) {
     const { url, jpeg, bw, l } = req.query;
 
     // Check if URL parameter is missing
@@ -14,7 +14,7 @@ function params(req, reply, next) {
     req.params.grayscale = bw !== '0';
     req.params.quality = parseInt(l, 10) || DEFAULT_QUALITY;
 
-    next();
+    done();
 }
 
 module.exports = params;
