@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 'use strict';
 
-//const Fastify = require('fastify');
+const Fastify = require('fastify');
 const { request } = require('undici');
 //const authenticate = require('./src/authenticate');
 const params = require('./src/params');
@@ -10,11 +10,8 @@ const shouldCompress = require('./src/shouldCompress');
 const redirect = require('./src/redirect');
 //const bypass = require('./src/bypass');
 
-const fastify = require('fastify')({
-  logger: true
-})
+const fastify = Fastify();
 const port = process.env.PORT || 3000;
-const host = ("RENDER" in process.env) ? `0.0.0.0` : `localhost`;
 
 
 
@@ -51,7 +48,7 @@ const buffer = Buffer.from(arrayBuffer); // Convert ArrayBuffer to Node.js Buffe
 
 fastify.get('/favicon.ico', (req, reply) => reply.status(204).send());
 
-fastify.listen({host: host, port: port }, function (err, address) {
+fastify.listen({host: `0.0.0.0`, port: port }, function (err, address) {
   if (err) {
     fastify.log.error(err)
     process.exit(1)
