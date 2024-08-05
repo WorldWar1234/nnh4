@@ -27,11 +27,11 @@ fastify.get('/', { preHandler: [params] }, async (req, reply) => {
     return;
   }
 
-  if (statusCode >= 300 && headers.location) {
+  /*if (statusCode >= 300 && headers.location) {
     // Handle redirects
     req.params.url = headers.location;
     return redirect(req, reply);
-  }
+  }*/
 
   req.params.originType = headers['content-type'] || '';
   req.params.originSize = parseInt(headers['content-length'], 10);
