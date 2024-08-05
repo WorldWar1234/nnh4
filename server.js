@@ -36,10 +36,11 @@ fastify.get('/', { preHandler: [authenticate, params] }, async (req, reply) => {
   req.params.originType = headers['content-type'] || '';
   req.params.originSize = parseInt(headers['content-length'], 10);
 
-  const buffer = await body.arrayBuffer();
-
+  const arrayBuffer = await body.arrayBuffer();
+const buffer = Buffer.from(arrayBuffer); // Convert ArrayBuffer to Node.js Buffer
+ 
   if (shouldCompress(req)) {
-    compress(req, reply, buffer);
+    compress(req, reply, buffer); // Correct usage
   } else {
     redirect(req, reply);
   }
