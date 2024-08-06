@@ -11,7 +11,7 @@ function redirect(req, reply) {
     .removeHeader('etag')
     .header('location', encodeURI(req.params.url))
     .header('content-encoding', 'identity')
-    .status(302)
+    .code(302)
     .send();
 }
 
