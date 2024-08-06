@@ -11,7 +11,7 @@ const shouldCompress = require('./src/shouldCompress');
 const redirect = require('./src/redirect');
 
 //const fastify = Fastify();
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT || 3000;
 
 fastify.get('/', { preHandler: [params] }, async (req, reply) => {
     const url = req.params.url;
