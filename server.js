@@ -20,7 +20,7 @@ fastify.get('/', { preHandler: [params] }, async (req, reply) => {
         const { statusCode, headers, body } = await request(url, { method: 'GET' });
 
         if (statusCode >= 400) {
-            reply.status(500).send('Error fetching the image.');
+            throw new Error(null);
             
         }
 
