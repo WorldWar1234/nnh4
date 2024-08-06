@@ -11,8 +11,8 @@ const shouldCompress = require('./src/shouldCompress');
 const redirect = require('./src/redirect');
 
 //const fastify = Fastify();
-const PORT = process.env.PORT || 3000;
-const HOST = process.env.HOST || 127.0.0.1;
+//const PORT = process.env.PORT || 3000;
+//const HOST = process.env.HOST || 127.0.0.1;
 
 fastify.get('/', { preHandler: [params] }, async (req, reply) => {
     const url = req.params.url;
@@ -59,10 +59,5 @@ fastify.get('/favicon.ico', (req, reply) => {
   return reply
 })
 
-fastify.listen({ host: HOST , port: PORT,}, (err, address) => {
-    if (err) {
-        console.error(err);
-        process.exit(1);
-    }
-    console.log(`Listening on ${address}`);
-});
+fastify.listen({ port: 3000 }, console.log(`Listening on ${address}`));
+
