@@ -10,7 +10,9 @@ const shouldCompress = require('./src/shouldCompress');
 const redirect = require('./src/redirect');
 //const bypass = require('./src/bypass');
 
-const fastify = Fastify();
+const fastify = require('fastify')({
+  logger: true
+})
 const port = process.env.PORT || 3000;
 
 
