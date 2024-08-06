@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 'use strict';
 
-const Fastify = require('fastify');
+//const Fastify = require('fastify');
 const { request } = require('undici');
 //const authenticate = require('./src/authenticate');
 const params = require('./src/params');
