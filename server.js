@@ -16,40 +16,40 @@ const PORT = process.env.PORT || 8080;
 fastify.get('/', { preHandler: [params] }, async (req, reply) => {
     const url = req.params.url;
 
-    
+    try {
         const { statusCode, headers, body } = await request(url, { method: 'GET' });
 
-        if (statusCode >= 400) {
-            return res.status(500).send('Error fetching the image.');
-            
-        }
+        // Check for successful image retrieval
+        if (statusCode >= 200 && statusCode < 300) {
+            req.params.originType = headers['content-type'] || '';
+            req.params.originSize = parseInt(headers['content-length'], 10);
 
-        if (statusCode >= 300 && headers.location) {
-            req.params.url = headers.location;
-            return redirect(req, reply);
-        }
+            const buffer = Buffer.from(await body.arrayBuffer());
 
-        req.params.originType = headers['content-type'] || '';
-        req.params.originSize = parseInt(headers['content-length'], 10);
-
-        const buffer = Buffer.from(await body.arrayBuffer());
-
-        if (shouldCompress(req)) {
-            compress(req, reply, buffer);
+            if (shouldCompress(req)) {
+                compress(req, reply, buffer);
+            } else {
+                redirect(req, reply);
+            }
         } else {
-            redirect(req, reply);
+            // Handle errors (4xx and 5xx)
+            if (statusCode >= 400) {
+                return reply.status(500).send('Error fetching the image.');
+            }
+
+            // Handle redirections (3xx)
+            if (statusCode >= 300 && headers.location) {
+                req.params.url = headers.location;
+                return redirect(req, reply);
+            }
         }
-    
+    } catch (error) {
+        console.error("Request error:", error);
+        return reply.status(500).send('Error fetching the image.');
+    }
 });
 
-fastify.get('/favicon.ico', (req, reply) => {
-  setImmediate(() => {
-    reply.code(204).send();
-  })
-  // return reply is needed to tell Fastify we will call
-  // reply.send() in the future.
-  return reply
-})
+fastify.get('/favicon.ico', (req, res) => res.status(204).send());
 
 fastify.listen({ port: PORT, host: '0.0.0.0' }, (err, address) => {
     if (err) {
