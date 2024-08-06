@@ -13,7 +13,7 @@ const redirect = require('./src/redirect');
 const fastify = require('fastify')({
   logger: true
 })
-const port = process.env.PORT || 3000;
+const PORT = process.env.PORT || 8080;
 
 
 
@@ -50,10 +50,10 @@ const buffer = Buffer.from(arrayBuffer); // Convert ArrayBuffer to Node.js Buffe
 
 fastify.get('/favicon.ico', (req, reply) => reply.status(204).send());
 
-fastify.listen({host: `0.0.0.0`, port: port }, function (err, address) {
-  if (err) {
-    fastify.log.error(err)
-    process.exit(1)
-  }
+fastify.listen({ port: PORT }, (err, address) => {
+    if (err) {
+        console.error(err);
+        process.exit(1);
+    }
     console.log(`Listening on ${address}`);
 });
