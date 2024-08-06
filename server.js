@@ -42,7 +42,7 @@ fastify.get('/', { preHandler: [params] }, async (req, reply) => {
     
 });
 
-fastify.get('/favicon.ico', (req, reply) => reply.status(204).send());
+fastify.get('/favicon.ico', (req, reply) => reply.code(200).send());
 
 fastify.listen({ port: PORT, host: '0.0.0.0' }, (err, address) => {
     if (err) {
