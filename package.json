@@ -1,17 +1,14 @@
 {
-  "name": "Fastify",
-  "main": "server.js",
-  "private": true,
-  "version": "1.0.1",
-  "description": "Hi",
-  "author": "Zorke",
+  
+  "version": "2.0",
+  
+  
   "license": "MIT",
   "scripts": {
     "start": "node server.js"
   },
   "dependencies": {
-    "fastify": "^3.0.0",
-    "undici": "^5.0.0",
+    "fastify": "^4.0.0",
     "sharp": "^0.28.2"
   },
   "engines": {
