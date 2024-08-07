@@ -5,14 +5,15 @@ const shouldCompress = require('./src/shouldCompress');
 const redirect = require('./src/redirect');
 
 const fastify = Fastify();
-const PORT = process.env.PORT || 10000;
+const PORT = process.env.PORT || 8080;
 
 fastify.get('/', { preHandler: [params] }, async (req, reply) => {
   const url = req.params.url;
 
   try {
     const response = await fetch(url);
-    const buffer = await response.buffer();
+    const arrayBuffer = await response.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
 
     req.params.originType = response.headers.get('content-type') || '';
     req.params.originSize = buffer.length;
