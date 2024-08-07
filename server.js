@@ -1,7 +1,7 @@
 'use strict';
 
 const fastify = require('fastify')({
-  logger: false
+  logger: true
 });
 const { request } = require('undici');
 const params = require('./src/params');
