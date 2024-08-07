@@ -1,18 +1,13 @@
-#!/usr/bin/env node
 'use strict';
+
 const fastify = require('fastify')({
   logger: false
-})
-//const Fastify = require('fastify');
+});
 const { request } = require('undici');
 const params = require('./src/params');
 const compress = require('./src/compress');
 const shouldCompress = require('./src/shouldCompress');
 const redirect = require('./src/redirect');
-
-//const fastify = Fastify();
-//const PORT = process.env.PORT || 3000;
-//const HOST = process.env.HOST || 127.0.0.1;
 
 fastify.get('/', { preHandler: [params] }, async (req, reply) => {
     const url = req.params.url;
@@ -43,6 +38,11 @@ fastify.get('/', { preHandler: [params] }, async (req, reply) => {
                 req.params.url = headers.location;
                 return redirect(req, reply);
             }
+
+            // If we reach this point, it means that the status code is not handled by any of the above conditions
+            // In this case, we should return a response to fulfill the promise
+            // This change is necessary to avoid the warning "Promise may not be fulfilled with 'undefined'" when the status code is not 204
+            return reply.status(statusCode).send();
         }
     } catch (error) {
         console.error("Request error:", error);
@@ -52,12 +52,13 @@ fastify.get('/', { preHandler: [params] }, async (req, reply) => {
 
 fastify.get('/favicon.ico', (req, reply) => {
   setImmediate(() => {
-    reply.status(204).send(); // Update reply.code() to reply.status() 
-  })
-  // return reply is needed to tell Fastify we will call
-  // reply.send() in the future.
-  return reply
-})
+    reply.status(204).send();
+  });
+  return reply;
+});
 
-fastify.listen({ port: 3000 }, console.log(`Listening on ${address}`));
-
+// Updated fastify.listen() method to log the address that the server is listening on
+fastify.listen({ port: 3000 }, (err, address) => {
+  if (err) throw err;
+  console.log(`Listening on ${address}`);
+});
