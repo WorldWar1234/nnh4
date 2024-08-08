@@ -21,7 +21,6 @@ function compress(req, reply, input) {
         .header('content-length', info.size)
         .header('x-original-size', req.params.originSize)
         .header('x-bytes-saved', req.params.originSize - info.size)
-        .header('content-encoding', 'identity')
         .status(200)
         .send(output);
     });
