@@ -10,7 +10,7 @@ const PORT = process.env.PORT || 8080;
 fastify.get('/', { preHandler: [params] }, async (req, reply) => {
   const url = req.params.url;
 
-  try {
+  
     const response = await fetch(url);
     const arrayBuffer = await response.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
@@ -23,10 +23,7 @@ fastify.get('/', { preHandler: [params] }, async (req, reply) => {
     } else {
       redirect(req, reply);
     }
-  } catch (error) {
-    console.error(error);
-    reply.status(500).send('Error fetching the image.');
-  }
+  
 });
 
 fastify.get('/favicon.ico', (req, reply) => reply.status(204).send());
